@@ -1,0 +1,81 @@
+﻿
+.loginBox {
+    width: 100%;
+    text-align: center;
+    margin: 20px 0px 20px 0px;
+    margin: 0 auto 0 auto;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    padding: 30px;
+}
+
+.box {
+    background-color: #e7feff;
+    padding: 0px 0px 10px 0px;
+    border-radius: 6px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border: #2877e9 4px solid;
+    width: 350px;
+    text-align: center;
+    margin: 0 auto 0 auto;
+}
+
+h1 {
+    font-size: 1.5em;
+    color: #525252;
+}
+
+input[type="email"],
+input[type="password"] {
+    width: 250px;
+    padding: 8px 10px;
+    margin: 6px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-size: 16px;
+}
+
+input[type="submit"],
+input[type="button"] {
+    background-color: #1E7FCB;
+    color: white;
+    padding: 14px 20px;
+    margin: 8px 0;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    width: 100px;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+p {
+    color: #ffffff;
+    text-decoration: none;
+    font-size: 12px;
+}
+
+.validation-message {
+    color: red; 
+    font-size: 0.9em; 
+    margin-top: 5px; 
+}
+
+
+input::placeholder {
+    color: #999999;
+    font-size: 14px;
+}
+
+input[type="submit"]:hover {
+    background-color: #d02645;
+}
+input[type="button"]:hover {
+    background-color: #d02645;
+}
+
+h4 {
+    font-size: 18px;
+    font-weight: normal;
+}

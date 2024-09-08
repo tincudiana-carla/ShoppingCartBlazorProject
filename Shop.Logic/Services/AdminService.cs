@@ -76,5 +76,32 @@ namespace Shop.Logic.Services
             }
             return categoryList;
         }
+
+        public bool UpdateCategory(CategoryModel categoryModel)
+        {
+            bool flag = false;
+            var category = _dbContext.Category.Where(x => x.Id == categoryModel.Id).FirstOrDefault();
+            if (category != null)
+            {
+                category.Name = categoryModel.Name;
+                _dbContext.Category.Update(category);
+                _dbContext.SaveChanges();
+                flag = true;
+            }
+            return flag;
+        }
+
+        public bool DeleteCategory(CategoryModel categoryModel)
+        {
+            bool flag = false;
+            var category = _dbContext.Category.Where(x => x.Id == categoryModel.Id).FirstOrDefault();
+            if (category != null)
+            {
+                _dbContext.Category.Remove(category);
+                _dbContext.SaveChanges();
+                flag = true;
+            }
+            return flag;
+        }
     }
 }

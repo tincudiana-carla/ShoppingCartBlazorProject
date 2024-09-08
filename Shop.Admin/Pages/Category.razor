@@ -76,11 +76,88 @@ else
 }
 
 
+@if (showEdit)
+{
+    <div class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5>Edit Category</h5>
+                <span class="close" @onclick="ToggleEdit">&times;</span>
+            </div>
+            <div class="modal-body">
+                <EditForm Model="@categoryToEdit" OnValidSubmit="EditCategory">
+                    <DataAnnotationsValidator />
+                    <div class="form-row">
+                        <div class="form-group col-5">
+                            <label>Name :</label>
+                            <InputText @bind-Value="categoryToEdit.Name" class="form-control" />
+                            <ValidationMessage For="@(() => categoryToEdit.Name)" />
+                        </div>
+                    </div>
+                    <div class="text-left">
+                        <input type="button" class="btn btn-primary" value="Edit" @onclick="EditCategory" />
+                        <input type="button" class="btn btn-primary" value="Cancel" @onclick="ToggleEdit" />
+                    </div>
+                </EditForm>
+
+            </div>
+        </div>
+    </div>
+}
+
+@if(showDelete)
+{
+     <div class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5>Edit Category</h5>
+                <span class="close" @onclick="ToggleDelete">&times;</span>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete <span style="background-color:yellow;">@categoryToDelete.Name?]</span> ?
+            </div>
+
+            <div class="modal-footer">
+                <input type="button" class="btn btn-primary" value="Yes" @onclick="DeleteCategory" />
+                <input type="button" class="btn btn-primary" value="No" @onclick="ToggleDelete" />
+            </div>
+        </div>
+    </div>
+}
+
+
+@if (success)
+{
+    <div class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                Alert
+                <span class="close" @onclick="ToggleSuccess">&times;</span>
+            </div>
+            <div class="modal-body">
+                @Message
+            </div>
+            <div class="modal-footer">
+                <input type="button" class="btn btn-primary" value="Close" @onclick="ToggleSuccess"/>
+            </div>
+        </div>
+    </div>
+
+}
+
+
 @code {
     [CascadingParameter]
     public EventCallback notify { get; set; }
     public CategoryModel categoryModel { get; set; }
     public List<CategoryModel> categoryList{ get; set; }
+    public CategoryModel categoryToEdit { get; set; }
+    public CategoryModel categoryToDelete { get; set; }
+    public bool showEdit = false;
+    public bool showDelete = false;
+    public bool success = false;
+    public string Message = string.Empty;
+
 
     protected override async Task OnInitializedAsync()
     {
@@ -100,27 +177,70 @@ else
     private async Task SaveCategory()
     {
         await adminPanelService.SaveCategory(categoryModel);
+        Message = "Category Added!";
+        ToggleSuccess();
+        categoryModel = new CategoryModel();
         await GetCategories();
-        ClearForm();
+       
     }
+
+    private async Task GetCategories()
+    {
+        categoryList = await adminPanelService.GetCategories();
+    }
+
+    private async Task EditCategory()
+    {
+        bool flag = await adminPanelService.UpdateCategory(categoryToEdit);
+        ToggleEdit();
+        Message = flag ? "Category Updated!" : "Category NOT Updated!";
+        ToggleSuccess();
+        categoryToEdit = new CategoryModel();
+        await GetCategories();
+
+    }
+
+    private async Task DeleteCategory()
+    {
+        bool flag = await adminPanelService.DeleteCategory(categoryToDelete);
+        ToggleDelete();
+        Message = flag ? "Category Deleted!" : "Category NOT Deleted!";
+        ToggleSuccess();
+        categoryToDelete = new CategoryModel();
+        await GetCategories();
+    }
+
 
     private void ClearForm()
     {
         categoryModel = new CategoryModel();
     }
 
-    private async Task EditButtonClick(CategoryModel category)
+    private void EditButtonClick(CategoryModel categoryToEditParam)
     {
-        await adminPanelService.SaveCategory(categoryModel);
+        categoryToEdit = categoryToEditParam;
+        ToggleEdit();
     }
 
-    private async Task DeleteButtonClick(CategoryModel category)
+    private void DeleteButtonClick(CategoryModel categoryToDeleteParam)
     {
-        await adminPanelService.SaveCategory(categoryModel);
+        categoryToDelete = categoryToDeleteParam;
+        ToggleDelete();
+    }
+  
+
+    private void ToggleEdit()
+    {
+        showEdit = showEdit == true ? false : true;
     }
 
-    private async Task GetCategories()
+    private void ToggleDelete()
     {
-        categoryList = await adminPanelService.GetCategories();
+        showDelete = showDelete == true ? false : true;
+    }
+
+    private void ToggleSuccess()
+    {
+        success = success == true ? false : true;
     }
 }

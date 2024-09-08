@@ -51,6 +51,18 @@ namespace Shop.Admin.Services
         {
             return await httpClient.GetFromJsonAsync<List<CategoryModel>>("https://localhost:7116/api/Admin/GetCategories");
         }
+
+        public async Task<bool> UpdateCategory(CategoryModel categoryToEdit)
+        {
+            var response = await httpClient.PostAsJsonAsync("https://localhost:7116/api/Admin/EditCategory", categoryToEdit);
+            return response.IsSuccessStatusCode==true ? true : false;      
+        }
+
+        public async Task<bool> DeleteCategory(CategoryModel categoryToDelete)
+        {
+            var response = await httpClient.PostAsJsonAsync("https://localhost:7116/api/Admin/DeleteCategory", categoryToDelete);
+            return response.IsSuccessStatusCode == true ? true : false;
+        }
     }
 }
 

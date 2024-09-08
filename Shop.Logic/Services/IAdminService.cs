@@ -12,5 +12,7 @@ namespace Shop.Logic.Services
         ResponseModel AdminLogin(LoginModel loginModel);
         CategoryModel SaveCategory(CategoryModel newCategoryModel);
         List<CategoryModel> GetCategories();
+        bool UpdateCategory(CategoryModel categoryModel);
+        bool DeleteCategory(CategoryModel categoryModel);
     }
 }

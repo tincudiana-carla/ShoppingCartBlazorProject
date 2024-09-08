@@ -42,6 +42,22 @@ namespace Shop.Api.Controllers
             return Ok(data);
         }
 
+        [HttpPost]
+        [Route("EditCategory")]
+        public IActionResult EditCategory(CategoryModel categoryModel)
+        {
+            var data = adminService.UpdateCategory(categoryModel);
+            return Ok(data);
+        }
+
+        [HttpPost]
+        [Route("DeleteCategory")]
+        public IActionResult DeleteCategory(CategoryModel categoryModel)
+        {
+            var data = adminService.DeleteCategory(categoryModel);
+            return Ok(data);
+        }
+
 
     }
 }

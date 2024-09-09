@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Shop.DataModels.CustomModels;
 using Shop.Logic.Services;
@@ -55,6 +56,39 @@ namespace Shop.Api.Controllers
         public IActionResult DeleteCategory(CategoryModel categoryModel)
         {
             var data = adminService.DeleteCategory(categoryModel);
+            return Ok(data);
+        }
+
+        [HttpGet]
+        [Route("GetProducts")]
+        public IActionResult GetProdcuts()
+        {
+            var data = adminService.GetProducts();
+            return Ok(data);
+        }
+
+        [HttpDelete("DeleteProduct/{id}")]
+        public async Task<IActionResult> DeleteProduct(int id)
+        {
+            bool result = adminService.DeleteProduct(id);
+            if (result)
+                return Ok(true);
+            return BadRequest(false);
+        }
+
+
+        [HttpPost]
+        [Route("SaveProduct")]
+        public IActionResult SaveProduct(ProductModel productModel)
+        {
+            int nextProductId = adminService.GetNewProductId();
+            productModel.ImageURL = @"Image/" + nextProductId + ".png";
+            var path = $"{_webHostEnvironment.WebRootPath}\\Images\\{nextProductId + ".png"}";
+            var file = System.IO.File.Create(path);
+            file.Write(productModel.FileContent,0,productModel.FileContent.Length);
+            file.Close();
+            string uploadFolder = Path.Combine(_webHostEnvironment.WebRootPath, "Images");
+            var data = adminService.SaveProduct(productModel);
             return Ok(data);
         }
 

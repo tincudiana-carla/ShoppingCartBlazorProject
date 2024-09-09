@@ -14,5 +14,10 @@ namespace Shop.Logic.Services
         List<CategoryModel> GetCategories();
         bool UpdateCategory(CategoryModel categoryModel);
         bool DeleteCategory(CategoryModel categoryModel);
+        List<ProductModel> GetProducts();
+        bool DeleteProduct(int id);
+        int GetNewProductId();
+        ProductModel SaveProduct(ProductModel newProduct);
+
     }
 }

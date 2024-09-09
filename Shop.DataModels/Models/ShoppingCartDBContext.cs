@@ -11,6 +11,8 @@ namespace Shop.DataModels.Models
         public DbSet<AdminInfo> AdminInfo { get; set; }
         public DbSet<Category> Category { get; set; }
 
+        public DbSet<Product> Product { get; set; }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)

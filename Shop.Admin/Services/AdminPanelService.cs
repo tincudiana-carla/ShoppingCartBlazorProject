@@ -4,6 +4,8 @@ using System.Text.Json.Serialization;
 using System.Text;
 using System.Net.Http.Json;
 using System.Text.Json;
+using Shop.DataModels.Models;
+using System.Net.Http;
 
 namespace Shop.Admin.Services
 {
@@ -63,6 +65,36 @@ namespace Shop.Admin.Services
             var response = await httpClient.PostAsJsonAsync("https://localhost:7116/api/Admin/DeleteCategory", categoryToDelete);
             return response.IsSuccessStatusCode == true ? true : false;
         }
+
+        public async Task<List<ProductModel>> GetProducts()
+        {
+            return await httpClient.GetFromJsonAsync<List<ProductModel>>("https://localhost:7116/api/Admin/GetProducts");
+        }
+
+        public async Task<bool> DeleteProduct(int id)
+        {
+            var response = await httpClient.DeleteAsync($"https://localhost:7116/api/Admin/DeleteProduct/{id}");
+            return response.IsSuccessStatusCode;
+        }
+
+
+        public async Task<ProductModel> SaveProduct(ProductModel newProductModel)
+        {
+
+            var response = await httpClient.PostAsJsonAsync("https://localhost:7116/api/Admin/SaveProduct", newProductModel);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var product = await response.Content.ReadFromJsonAsync<ProductModel>();
+                return product;
+            }
+            else
+            {
+                var errorContent = await response.Content.ReadAsStringAsync();
+                throw new Exception($"Failed to save product. Status code: {response.StatusCode}. Error: {errorContent}");
+            }
+        }
+
     }
 }
 

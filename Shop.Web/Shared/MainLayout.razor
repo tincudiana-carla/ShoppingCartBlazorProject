@@ -2,18 +2,126 @@
 
 <PageTitle>Shop.Web</PageTitle>
 
-<div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
+<div class="mainlayout">
 
-    <main>
-        <div class="top-row px-4">
-            <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
+    <div style="padding-bottom:25px;">
+
+        <div class="divleft" style="padding-right:15px;">
+            <NavLink href="/">
+                Home
+            </NavLink>
         </div>
 
-        <article class="content px-4">
+        <div class="divleft">
+            @if (IsUserLoggedIn)
+            {
+                <i class="fade fa-user"></i>
+
+                <span>Welcome, @LoggedInUsername</span>
+            }
+            else
+            {
+                <i class="fa fa-user"></i>
+
+                <span>Welcome,</span>
+            }
+        </div>
+
+
+        <div class="divright">
+            @if (IsUserLoggedIn)
+            {
+                <div style="padding-left:15px;">
+                    <i class="fa fa-sign-out"></i>
+                    <a @onclick="@Logout" href="#">Log Out</a>
+                </div>
+            }
+
+        </div>
+
+        <div class="divright">
+            @if (IsUserLoggedIn)
+            {
+               <NavLink href="myaccount">
+                   MyAccount
+               </NavLink>
+            }
+
+        </div>
+
+        <div class="divright">
+            @if (!IsUserLoggedIn)
+            {
+                <NavLink href="login">
+                    Login
+                </NavLink>
+            }
+
+        </div>
+        <div class="divright">
+            @if (!IsUserLoggedIn)
+            {
+                <NavLink href="register">
+                    Register
+                </NavLink>
+            }
+
+        </div>
+
+
+    </div>
+
+
+    <div class="headerMainLayout">
+        <div class="col-container">
+
+            <div class="col" style="border-radius:25px;">
+                <NavLink href="/">
+                    <img src="images/ShoppingIcon.png"
+                         alt="Shopping Icon"
+                         style="cursor:pointer; width: 75px; height: 75px; mask-image: radial-gradient(circle, white 60%, transparent 100%); -webkit-mask-image: radial-gradient(circle, white 60%, transparent 100%);" />
+                </NavLink>
+            </div>
+
+
+            <div class="col" style="text-align: right;">
+                @if (cartCount > 0)
+                {
+                    <a href="/mycart">
+                        <i class="fa fa-shopping-cart" style="font-size:48px; color:black; position:relative; margin-right: 50px;">
+                            <span style="position:absolute; top:-10px; right:-10px; background:red; color:white;
+                             border-radius:50%; padding:5px 10px; font-weight:bold; font-size:20px;">
+                                @cartCount
+                            </span>
+                        </i>
+                    </a>
+                }
+                else
+                {
+                    <a href="/mycart">
+                        <i class="fa fa-shopping-cart" style="font-size:48px; color:black; margin-right: 50px;"></i>
+                    </a>
+                }
+            </div>
+
+        </div>
+    </div>
+    <main>
+        <div>
             @Body
-        </article>
+        </div>
     </main>
+    <div class="footerMainLayout">
+        &copy; 2024 - Carla's Shopping Cart
+    </div>
 </div>
+
+@code {
+    public int cartCount = 0;
+    public bool IsUserLoggedIn = false;
+    public string LoggedInUsername = "User";
+    private void Logout()
+    {
+        
+    }
+}

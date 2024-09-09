@@ -1,0 +1,40 @@
+﻿.mainlayout{
+    max-width:900px;
+    margin:auto;
+    background:white;
+    padding: 10px;
+}
+*{
+    box-sizing:border-box;
+}
+.headerMainLayout{
+    color:black;
+    padding:5px;
+    border: 1px groove #808080;
+    border-radius:14px;
+    background: linear-gradient(-45deg, #ffd800, #808080, #23a6d5, #f5f542);
+    backgroud-size: 400% 400%;
+}
+.footerMainLayout {
+    color: black;
+    padding: 5px;
+    border: 1px groove #808080;
+    border-radius: 7px;
+    background: linear-gradient(-45deg, #ffd800, #808080, #23a6d5, #f5f542);
+    backgroud-size: 400% 400%;
+}
+.col-container{
+    display:table;
+    width:100%;
+    border-radius:25px;
+}
+.col{
+    display:table-cell;
+    padding:16px;
+}
+.divleft{
+    float:left;
+}
+.divright{
+    float:right;
+}

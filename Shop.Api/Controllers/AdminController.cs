@@ -83,7 +83,7 @@ namespace Shop.Api.Controllers
         {
             int nextProductId = adminService.GetNewProductId();
             productModel.ImageURL = @"Image/" + nextProductId + ".png";
-            var path = $"{_webHostEnvironment.WebRootPath}\\Images\\{nextProductId + ".png"}";
+            var path = $"{_webHostEnvironment.WebRootPath}\\Image\\{nextProductId + ".png"}";
             var file = System.IO.File.Create(path);
             file.Write(productModel.FileContent, 0, productModel.FileContent.Length);
             file.Close();

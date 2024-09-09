@@ -1,13 +1,95 @@
 ﻿@page "/"
 
-<PageTitle>Index</PageTitle>
+@inject NavigationManager navManager;
+@inject IUserPanelService userPanelService;
+@inject ProtectedSessionStorage sessionStorage;
+
+<PageTitle>Carla's ShopCart</PageTitle>
 
 <div style="min-height:500px">
     <div class="column menu">
-
+        @if (categoryList == null)
+        {
+            <span>Loading...</span>
+        }
+        else
+        {
+            <div style="text-align:center;">
+                <h5>Shopping List</h5>
+            </div>
+            <ul>
+                @foreach (var category in categoryList)
+                {
+                    <li @onclick="(() => LoadProductByCategory(category))">@category.Name</li>
+                }
+            </ul>
+        }
     </div>
     <div class="column content">
-
+        @if (productList == null)
+        {
+            <span>Loading...</span>
+        }
+        else
+        {
+            <div class="container">
+                <div class="row">
+                    @foreach (var product in productList)
+                    {
+                        <div class="col-md-4 mb-4">
+                            <div class="product-card">
+                                <img src="https://localhost:7116/@product.ImageURL" class="product-image" alt="@product.Name" />
+                                <div class="product-info">
+                                    <h5 class="product-name">@product.Name</h5>
+                                    <p class="product-price">Price: $@product.Price</p>
+                                    <p class="product-stock">Stock: @product.Stock</p>
+                                    @if (product.CartFlag)
+                                    {
+                                        <button type="button" class="btn add-to-cart remove-from-cart" @onclick="(() => AddToCartClick(product))">Remove From Cart</button>
+                                    }
+                                    else
+                                    {
+                                        <button type="button" class="btn add-to-cart" @onclick="(() => AddToCartClick(product))">Add To Cart</button>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
     </div>
 </div>
 
+
+@code {
+    public List<CategoryModel> categoryList { get; set; }
+    public List<ProductModel> productList { get; set; }
+    public string categoryName = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetCategories();
+    }
+
+    private async Task GetCategories()
+    {
+        categoryList = await userPanelService.GetCategories();
+        if (categoryList != null && categoryList.Count > 0)
+        {
+            await LoadProductByCategory(categoryList.FirstOrDefault());
+        }
+    }
+
+    private async Task LoadProductByCategory(CategoryModel categoryModel)
+    {
+        categoryName = categoryModel.Name;
+        productList = await userPanelService.GetProductsByCategoryId(categoryModel.Id);
+    }
+
+    private async Task AddToCartClick(ProductModel productModel)
+    {
+        
+    }
+
+}

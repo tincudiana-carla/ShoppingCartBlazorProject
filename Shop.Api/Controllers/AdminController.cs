@@ -85,12 +85,30 @@ namespace Shop.Api.Controllers
             productModel.ImageURL = @"Image/" + nextProductId + ".png";
             var path = $"{_webHostEnvironment.WebRootPath}\\Images\\{nextProductId + ".png"}";
             var file = System.IO.File.Create(path);
-            file.Write(productModel.FileContent,0,productModel.FileContent.Length);
+            file.Write(productModel.FileContent, 0, productModel.FileContent.Length);
             file.Close();
             string uploadFolder = Path.Combine(_webHostEnvironment.WebRootPath, "Images");
             var data = adminService.SaveProduct(productModel);
             return Ok(data);
         }
+
+        [HttpGet]
+        [Route("GetProductStock")]
+        public IActionResult GetProductStock()
+        {
+            var data = adminService.GetProductStock();
+            return Ok(data);
+        }
+
+        [HttpPost]
+        [Route("UpdateProductStock")]
+        public IActionResult UpdateProductStock(StockModel stock)
+        {
+            var data = adminService.UpdateProductStock(stock);
+            return data ? Ok() : BadRequest("Failed to update stock.");
+        }
+
+
 
 
     }

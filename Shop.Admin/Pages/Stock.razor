@@ -1,9 +1,145 @@
 ﻿@page "/stock"
+@inject IAdminPanelService adminPanelService;
+
 <h3>Stock</h3>
 
+
+<div class="custom-card">
+    <h4 class="custom-card-header">Stock</h4>
+    <div class="custom-card-body">
+        @if (stockList == null)
+        {
+            <p><em>Loading...</em></p>
+        }
+        else
+        {
+            <table class="custom-table">
+                <thead>
+                    <tr>
+                        <th class="custom-table-header">
+                            Sr.No
+                        </th>
+                        <th class="custom-table-header">
+                            Name
+                        </th>
+                        <th class="custom-table-header">
+                            Stock
+                        </th>
+                        <th class="custom-table-header">
+                            Category
+                        </th>
+                        <th class="custom-table-header">
+                            Add Stock?
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var (index, stock) in stockList.Select((stock, i) => (i + 1, stock)))
+                    {
+                        <tr class="custom-table-row">
+                            <td class="custom-table-data">
+                                @index
+                            </td>
+                            <td class="custom-table-data">
+                                @stock.Name
+                            </td>
+                            <td class="custom-table-data">
+                                @stock.Stock
+                            </td>
+                            <td class="custom-table-data">
+                                @stock.CategoryName
+                            </td>
+                            <td class="custom-table-data">
+                                <button class="custom-button" @onclick="(()=>AddButtonClick(stock))">Add Stock</button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+</div>
+
+
+@if (showAdd)
+{
+    <div class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5>Add Product's Stock</h5>
+                <span class="close" @onclick="ToggleAdd">&times;</span>
+            </div>
+            <div class="modal-body">
+                <EditForm Model="@stockToUpdate" OnValidSubmit="UpdateButtonClick">
+                    <DataAnnotationsValidator />
+                    <div class="form-row">
+                        <div class="form-group col-6">
+                            <label>Product Name :</label>
+                            <label>@stockToUpdate.Name</label>
+                        </div>
+
+                        <div class="form-group col-6">
+                            <label>Avaible Stock :</label>
+                            <label>@stockToUpdate.Stock</label>
+                        </div>
+
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group col-6">
+                            New Stock :
+                            <InputNumber @bind-Value="stockToUpdate.NewStock" class="form-control" />
+                            <ValidationMessage For="@(()=>stockToUpdate.NewStock)" />
+                        </div>
+                        <div class="form-group col-6">
+                            <label>Total Stock :</label>
+                            <br/>
+                            <label>@TotalStock</label>
+
+                        </div>
+                    </div>
+                </EditForm>
+            </div>
+            <div class="modal-footer">
+                <input type="button" class="custom-button" value="Update" @onclick="UpdateButtonClick" />
+                <input type="button" class="custom-button" value="Cancel" @onclick="ToggleAdd" />
+            </div>
+        </div>
+    </div>
+}
+
+@if (success)
+{
+    <div class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                Alert
+                <span class="close" @onclick="ToggleSuccess">&times;</span>
+            </div>
+            <div class="modal-body">
+                @Message
+            </div>
+            <div class="modal-footer">
+                <input type="button" class="btn btn-primary" value="Close" @onclick="ToggleSuccess" />
+            </div>
+        </div>
+    </div>
+}
 @code {
     [CascadingParameter]
     public EventCallback notify { get; set; }
+    string Message = string.Empty;
+    public bool success = false;
+    public bool showAdd = false;
+    public List<StockModel> stockList { get; set; }
+    public StockModel stockToUpdate = null;
+    private int? TotalStock => stockToUpdate.Stock + stockToUpdate.NewStock;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetProductStock();
+    }
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
 
@@ -12,4 +148,38 @@
             await notify.InvokeAsync();
         }
     }
+
+    private void ToggleSuccess()
+    {
+        success = success == true ? false : true;
+    }
+
+    private void ToggleAdd()
+    {
+        showAdd = showAdd == true ? false : true;
+    }
+
+    private void AddButtonClick(StockModel stock)
+    {
+        stockToUpdate = stock;
+        stockToUpdate.NewStock = 0;
+        stockToUpdate.Stock = stock.Stock;
+        ToggleAdd();
+    }
+
+    private async Task UpdateButtonClick()
+    {
+        bool flag = await adminPanelService.UpdateProductStock(stockToUpdate);
+        ToggleAdd();
+        Message = flag == true ? "Product's Stock Updated!" : "Product's Stock NOT Updated!";
+        ToggleSuccess();
+        stockToUpdate = new StockModel();
+        await GetProductStock();
+    }
+
+    private async Task GetProductStock()
+    {
+        stockList = await adminPanelService.GetProductStock();
+    }
+
 }

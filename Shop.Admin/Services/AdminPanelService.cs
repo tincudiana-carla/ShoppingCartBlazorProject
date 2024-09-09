@@ -95,6 +95,29 @@ namespace Shop.Admin.Services
             }
         }
 
+        public async Task<List<StockModel>> GetProductStock()
+        {
+            return  await httpClient.GetFromJsonAsync<List<StockModel>>("https://localhost:7116/api/Admin/GetProductStock");
+        }
+
+        public async Task<bool> UpdateProductStock(StockModel stockModel)
+        {
+            var response = await httpClient.PostAsJsonAsync("https://localhost:7116/api/Admin/UpdateProductStock", stockModel);
+
+
+            if (response.IsSuccessStatusCode)
+            {
+                return true;
+            }
+            else
+            {
+                var errorContent = await response.Content.ReadAsStringAsync();
+                Console.WriteLine($"Failed to update product stock. Status code: {response.StatusCode}. Error: {errorContent}");
+                return false;
+            }
+        }
+
+
     }
 }
 

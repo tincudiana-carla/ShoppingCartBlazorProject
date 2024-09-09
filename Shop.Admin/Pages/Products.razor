@@ -97,16 +97,14 @@ else
                             <th>
                                 Category
                             </th>
-                            <th style="width:80px;">
-                                Edit?
-                            </th>
+
                             <th style="width:80px;">
                                 Delete?
                             </th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach(var(index,prod) in productList.Select((prod, i) => (i + 1, prod)))
+                        @foreach (var (index, prod) in productList.Select((prod, i) => (i + 1, prod)))
                         {
                             <tr>
                                 <td>
@@ -124,9 +122,6 @@ else
                                 </td>
                                 <td>
                                     @prod.CategoryName
-                                </td>
-                                <td>
-                                    <input type="button" class="btn btn-primary" value="Edit"  @onclick="(()=>EditButtonClick(prod))"/>
                                 </td>
                                 <td>
                                     <input type="button" class="btn btn-primary" value="Delete" @onclick="(()=>DeleteButtonClick(prod))" />
@@ -158,34 +153,6 @@ else
     </div>
 }
 
-@* @if (showEdit)
-{
-    <div class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5>Edit Product</h5>
-                <span class="close" @onclick="ToggleEdit">&times;</span>
-            </div>
-            <div class="modal-body">
-                <EditForm Model="@productToUpdate" OnValidSubmit="EditProduct">
-                    <DataAnnotationsValidator />
-                    <div class="form-row">
-                        <div class="form-group col-5">
-                            <label>Name :</label>
-                            <InputText @bind-Value="categoryToEdit.Name" class="form-control" />
-                            <ValidationMessage For="@(() => productToUpdate.Name)" />
-                        </div>
-                    </div>
-                    <div class="text-left">
-                        <input type="button" class="btn btn-primary" value="Edit" @onclick="EditProduct" />
-                        <input type="button" class="btn btn-primary" value="Cancel" @onclick="ToggleEdit" />
-                    </div>
-                </EditForm>
-
-            </div>
-        </div>
-    </div>
-} *@
 
 @if (showDelete)
 {
@@ -218,7 +185,6 @@ else
     List<string> imageUrls = new List<string>();
     public ProductModel productToUpdate { get; set; }
     public ProductModel productToDelete { get; set; }
-    public bool showEdit = false;
     public bool showDelete = false;
     public bool success = false;
     string Message = string.Empty;
@@ -265,7 +231,7 @@ else
 
         productModel.CategoryId = categoryId;
         productModel.FileName = selectedFile.Name;
-        productModel.ImageURL = $"Images/{selectedFile.Name}"; 
+        productModel.ImageURL = $"Images/{selectedFile.Name}";
 
         var selectedCategory = categoryList.FirstOrDefault(c => c.Id == categoryId);
         productModel.CategoryName = selectedCategory?.Name;
@@ -286,22 +252,7 @@ else
         }
 
     }
-    private void EditButtonClick(ProductModel productToUpdate)
-    {
-        productToUpdate = productToUpdate;
-        ToggleEdit();
-    }
-    //ToDo: Edit a Product
-    private async Task EditProduct()
-    {
-        // bool flag = await adminPanelService.UpdateProduct(productToUpdate);
-        // ToggleEdit();
-        // Message = flag ? "Product Updated!" : "Product NOT Updated!";
-        // ToggleSuccess();
-        // productToUpdate = new ProductModel();
-        // await GetProducts();
-
-    }
+ 
 
     private void DeleteButtonClick(ProductModel product)
     {
@@ -321,12 +272,7 @@ else
     }
     private void ToggleDelete()
     {
-        showDelete = showDelete == true ? false:true;
-    }
-
-    private void ToggleEdit()
-    {
-        showEdit = showEdit == true ? false : true;
+        showDelete = showDelete == true ? false : true;
     }
 
     private void ToggleSuccess()

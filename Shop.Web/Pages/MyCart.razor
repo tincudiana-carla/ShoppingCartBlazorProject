@@ -1,7 +1,123 @@
 ﻿@page "/mycart"
+@inject NavigationManager navManager;
+@inject IUserPanelService userPanelService;
+@inject ProtectedSessionStorage sessionStorage;
 
-<h3>MyCart</h3>
+<div class="small-container cart-page">
+    @if (myCart != null && myCart.Count > 0)
+    {
+        <table>
+            <tr>
+                <th>Product</th>
+                <th>Remove</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Subtotal</th>
+            </tr>
+            @foreach (var cart in myCart)
+            {
+                <tr>
+                    <td>
+                        <div class="cart-info">
+                            <img src="https://localhost:7116/@cart.ProductImage" alt="Product Photo" />
+                            <div>
+                                <p>@cart.ProductName</p>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <a @onclick="(() => RemoveFromCartClick(cart))" style="cursor:pointer;">Remove</a>
+                    </td>
+                    <td>@cart.Price</td>
+                    <td>
+                        <input type="number" @bind="cart.Quantity" min="1" max="@cart.AvailableStock" @oninput="onQuantityChanges" style="width:60px;" />
+                    </td>
+                    <td>
+                        $@(cart.Price * cart.Quantity)
+                    </td>
+                </tr>
+            }
+        </table>
+        <div class="total-price">
+            <table>
+                <tr>
+                    <td>Subtotal</td>
+                    <td>$@subTotal</td>
+                </tr>
+                <tr>
+                    <td>Shipping Charges</td>
+                    <td>$@shippingCharges</td>
+                </tr>
+                <tr>
+                    <td>Total</td>
+                    <td>$@finalTotal</td>
+                </tr>
+                <tr>
+                    <td>Shipping Address</td>
+                    <td>
+                        <textarea rows="3" cols="30" name="shippingaddress" placeholder="Shipping Address" @bind="shippingAddress"></textarea>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Payment Mode</td>
+                    <td>@paymentMode</td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>
+                        <button type="button" value="CheckOut" class="btn btn-primary" @onclick="CheckoutClick">Check Out</button>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    }
+    else
+    {
+        <hr />
+        <div style="text-align:center;">
+            <img src="/images/empty_cart.png" style="width: 800px;" />
+        </div>
+    }
+</div>
 
 @code {
+    public List<CartModel> myCart { get; set; } = new List<CartModel>();
+    public string shippingAddress { get; set; }
+    public string paymentMode { get; set; } = "Cash On Delivery";
+    public int subTotal { get; set; }
+    public int shippingCharges { get; set; } = 100;
+    public int finalTotal { get; set; }
 
+    protected override async Task OnInitializedAsync()
+    {
+        var result = await sessionStorage.GetAsync<List<CartModel>>("myCart");
+        if (result.Success)
+        {
+            myCart = result.Value;
+            CalculateTotals();
+        }
+    }
+
+    private void CalculateTotals()
+    {
+        subTotal = myCart.Sum(cartItem => cartItem.Price * cartItem.Quantity);
+        finalTotal = subTotal + shippingCharges;
+    }
+
+    private async Task RemoveFromCartClick(CartModel cartItem)
+    {
+        myCart.Remove(cartItem);
+        await sessionStorage.SetAsync("myCart", myCart);
+        CalculateTotals();
+    }
+
+    private void onQuantityChanges(ChangeEventArgs e)
+    {
+        CalculateTotals();
+    }
+
+    private async Task CheckoutClick()
+    {
+       
+    }
 }

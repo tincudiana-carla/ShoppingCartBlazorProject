@@ -66,6 +66,11 @@
     public List<CategoryModel> categoryList { get; set; }
     public List<ProductModel> productList { get; set; }
     public string categoryName = string.Empty;
+    public bool cartFlag = false;
+    public List<CartModel> myCart { get; set; }
+
+    [CascadingParameter]
+    public EventCallback notify { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -85,11 +90,80 @@
     {
         categoryName = categoryModel.Name;
         productList = await userPanelService.GetProductsByCategoryId(categoryModel.Id);
+        if(productList!= null && productList.Count > 0)
+        {
+            await UpdateCartText();
+        }
+      
     }
 
     private async Task AddToCartClick(ProductModel productModel)
     {
-        
+        cartFlag = true;
+        var result = await sessionStorage.GetAsync<List<CartModel>>("myCart");
+        myCart = !result.Success ? new List<CartModel>() : result.Value;
+
+        if (productModel.CartFlag)
+        {
+            var existingProduct = myCart.Where(x => x.ProductId == productModel.Id).FirstOrDefault();
+            if (existingProduct != null)
+            {
+                myCart.Remove(existingProduct);
+                await sessionStorage.SetAsync("myCart", myCart);
+            }
+        }
+        else
+        {
+            CartModel cartModel = new CartModel();
+            cartModel.ProductId = productModel.Id;
+            cartModel.Quantity = 1;
+            cartModel.AvailableStock = Convert.ToInt32(productModel.Stock);
+            cartModel.ProductName = productModel.Name;
+            cartModel.ProductImage = productModel.ImageURL;
+            cartModel.Price = Convert.ToInt32(productModel.Price);
+            myCart.Add(cartModel);
+            await sessionStorage.SetAsync("myCart", myCart);
+        }
+        await UpdateCartText();
+        await notify.InvokeAsync();
     }
 
+    private async Task UpdateCartText()
+    {
+        if (cartFlag)
+        {
+            var result = await sessionStorage.GetAsync<List<CartModel>>("myCart");
+            if (result.Success)
+            {
+                foreach(var product in productList)
+                {
+                    product.CartFlag = false;
+
+                }
+                myCart = result.Value;
+                foreach (var cart in myCart)
+                {
+                    var cartProduct = productList.Where(x => x.Id == cart.ProductId).FirstOrDefault();
+                    if(cartProduct!= null)
+                    {
+                        cartProduct.CartFlag = true;
+                    }
+                }
+
+            }
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var result = await sessionStorage.GetAsync<List<CartModel>>("myCart");
+            if (result.Success)
+            {
+                cartFlag = true;
+            }
+        }
+    }
 }
+
